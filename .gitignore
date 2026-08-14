@@ -1,0 +1,14 @@
+# Imagenes compiladas (cada quien hace su build)
+*.tar
+*.tar.gz
+
+# Archivos de IDE
+.vscode/
+.idea/
+*.swp
+
+# macOS
+.DS_Store
+
+.env
+.env.*

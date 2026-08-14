@@ -1,0 +1,92 @@
+x-hadoop-common: &hadoop-common
+  build: .
+  image: hadoop-lab:3.5.0
+  user: "0:0"
+  networks: [hadoop-net]
+
+services:
+  namenode:
+    <<: *hadoop-common
+    container_name: namenode
+    hostname: namenode
+    command:
+      - "bash"
+      - "-lc"
+      - "if [ ! -d /data/name/current ]; then hdfs namenode -format -force -nonInteractive; fi; exec hdfs namenode"
+    ports:
+      - "127.0.0.1:9870:9870"
+    volumes:
+      - "namenode_data:/data/name"
+
+  datanode1:
+    <<: *hadoop-common
+    container_name: datanode1
+    hostname: datanode1
+    command: ["bash", "-lc", "exec hdfs datanode"]
+    depends_on: [namenode]
+    ports:
+      - "127.0.0.1:9864:9864"
+    volumes:
+      - "datanode1_data:/data/data"
+
+  datanode2:
+    <<: *hadoop-common
+    container_name: datanode2
+    hostname: datanode2
+    command: ["bash", "-lc", "exec hdfs datanode"]
+    depends_on: [namenode]
+    ports:
+      - "127.0.0.1:9865:9864"
+    volumes:
+      - "datanode2_data:/data/data"
+
+  datanode3:
+    <<: *hadoop-common
+    container_name: datanode3
+    hostname: datanode3
+    command: ["bash", "-lc", "exec hdfs datanode"]
+    depends_on: [namenode]
+    ports:
+      - "127.0.0.1:9866:9864"
+    volumes:
+      - "datanode3_data:/data/data"
+
+  resourcemanager:
+    <<: *hadoop-common
+    container_name: resourcemanager
+    hostname: resourcemanager
+    command: ["bash", "-lc", "exec yarn resourcemanager"]
+    depends_on: [namenode]
+    ports:
+      - "127.0.0.1:8088:8088"
+
+  nodemanager1:
+    <<: *hadoop-common
+    container_name: nodemanager1
+    hostname: nodemanager1
+    command: ["bash", "-lc", "exec yarn nodemanager"]
+    depends_on: [resourcemanager]
+
+  nodemanager2:
+    <<: *hadoop-common
+    container_name: nodemanager2
+    hostname: nodemanager2
+    command: ["bash", "-lc", "exec yarn nodemanager"]
+    depends_on: [resourcemanager]
+
+  nodemanager3:
+    <<: *hadoop-common
+    container_name: nodemanager3
+    hostname: nodemanager3
+    command: ["bash", "-lc", "exec yarn nodemanager"]
+    depends_on: [resourcemanager]
+
+networks:
+  hadoop-net:
+    driver: bridge
+
+volumes:
+  namenode_data:
+  datanode1_data:
+  datanode2_data:
+  datanode3_data:
